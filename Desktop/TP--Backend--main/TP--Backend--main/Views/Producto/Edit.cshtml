@@ -1,0 +1,68 @@
+@model GestorDespacho.Models.Producto
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Producto</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" id="formProductoEdit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            
+            <div class="form-group">
+                <label asp-for="Descripcion" class="control-label"></label>
+                <input asp-for="Descripcion" class="form-control" />
+                <span asp-validation-for="Descripcion" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <label asp-for="Costo" class="control-label"></label>
+                <input asp-for="Costo" type="text" class="form-control" required />
+                <span asp-validation-for="Costo" id="errorCostoEdit" class="text-danger">@Html.ValidationMessageFor(model => model.Costo)</span>
+            </div>
+            
+            <div class="form-group mt-3">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        $.validator.methods.number = function (value, element) {
+            return this.optional(element) || /^-?(?:\d+|\d{1,3}(?:[\s\.,]\d{3})+)(?:[\.,]\d+)?$/.test(value);
+        }
+
+        $("#formProductoEdit").submit(function (e) {
+            var costoVal = $("#Costo").val().trim();
+            var valorParaValidar = costoVal.replace('.', ',');
+            var regexDecimal = /^\d+(?:,\d{1,2})?$/;
+
+            if (!regexDecimal.test(valorParaValidar) || parseFloat(costoVal.replace(',', '.')) <= 0) {
+                e.preventDefault();
+                $("#errorCostoEdit").text("El costo debe ser un número mayor a 0 y válido (ej: 1500 o 1500,50). No se permiten letras.");
+                $("#Costo").addClass("is-invalid");
+                return false;
+            }
+        });
+
+        $("#Costo").on("input", function() {
+            $(this).removeClass("is-invalid");
+            $("#errorCostoEdit").text("");
+        });
+    </script>
+}

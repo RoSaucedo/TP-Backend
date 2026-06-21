@@ -1,0 +1,31 @@
+﻿# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build
+bin/
+obj/
+
+# NuGet
+.nuget/
+packages/
+
+# Node modules
+node_modules/
+
+# VSCode
+.vscode/
+
+# User profile folders
+.m2/
+.quokka/
+.ghcp-appmod/
+.nuget/
+.cache/
+
+# Logs
+*.log
+
+# Migrations (opcional, si no querés subir las migraciones)
+# Migrations/

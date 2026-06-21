@@ -1,0 +1,73 @@
+@model GestorDespacho.Models.Producto
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Producto</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" id="formProducto">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Descripcion" class="control-label"></label>
+                <input asp-for="Descripcion" class="form-control" />
+                <span asp-validation-for="Descripcion" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Costo" class="control-label"></label>
+                <input asp-for="Costo" type="text" class="form-control" placeholder="0,00" required />
+                <span asp-validation-for="Costo" id="errorCosto" class="text-danger">@Html.ValidationMessageFor(model => model.Costo)</span>
+            </div>
+
+            <div class="form-group mt-3">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        $.validator.methods.number = function (value, element) {
+            return this.optional(element) || /^-?(?:\d+|\d{1,3}(?:[\s\.,]\d{3})+)(?:[\.,]\d+)?$/.test(value);
+        }
+
+        // Frena el formulario si el costo contiene letras o caracteres raros
+        $("#formProducto").submit(function (e) {
+            var costoVal = $("#Costo").val().trim();
+            
+            // Reemplaza puntos por comas para validar el formato regional
+            var valorParaValidar = costoVal.replace('.', ',');
+            
+            // Expresión regular que solo permite números enteros o decimales con coma
+            var regexDecimal = /^\d+(?:,\d{1,2})?$/;
+
+            if (!regexDecimal.test(valorParaValidar) || parseFloat(costoVal.replace(',', '.')) <= 0) {
+                e.preventDefault(); // Detiene el envío del formulario
+                $("#errorCosto").text("El costo debe ser un número mayor a 0 y válido (ej: 1500 o 1500,50). No se permiten letras.");
+                $("#Costo").addClass("is-invalid");
+                return false;
+            }
+        });
+
+        // Limpia el mensaje de error cuando el usuario vuelve a escribir
+        $("#Costo").on("input", function() {
+            $(this).removeClass("is-invalid");
+            $("#errorCosto").text("");
+        });
+    </script>
+}

@@ -1,0 +1,78 @@
+@model GestorDespacho.Models.Direccion
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Direccion</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="CalleNumero" class="control-label"></label>
+                <input asp-for="CalleNumero" class="form-control" />
+                <span asp-validation-for="CalleNumero" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Ciudad" class="control-label"></label>
+                <input asp-for="Ciudad" class="form-control" />
+                <span asp-validation-for="Ciudad" class="text-danger"></span>
+            </div>
+
+
+
+            <div class="form-group">
+                <label class="control-label">Buscar Cliente (Nombre o CUIT)</label>
+
+                <input type="text" list="clientesData" class="form-control" id="clienteBuscador" placeholder="Escriba para buscar..." autocomplete="off" />
+
+                <input type="hidden" asp-for="ClienteId" id="ClienteIdReal" />
+
+                <datalist id="clientesData">
+                    @if (ViewBag.ClientesLista != null)
+                    {
+                        foreach (var cliente in ViewBag.ClientesLista)
+                        {
+                            // Mostramos Nombre y CUIT, pero guardamos el ID en el atributo data-id
+                            <option data-id="@cliente.Id" value="@cliente.Nombre (CUIT: @cliente.CUIT)"></option>
+                        }
+                    }
+                </datalist>
+                <span asp-validation-for="ClienteId" class="text-danger"></span>
+            </div>
+
+           
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+    @section Scripts {
+        <script>
+                document.getElementById('clienteBuscador').addEventListener('input', function () {
+                    var inputValue = this.value;
+                    var options = document.getElementById('clientesData').options;
+                    var hiddenInput = document.getElementById('ClienteIdReal');
+
+                    hiddenInput.value = ""; 
+
+                    for (var i = 0; i < options.length; i++) {
+                        if (options[i].value === inputValue) {
+                            hiddenInput.value = options[i].getAttribute('data-id');
+                            break;
+                        }
+                    }
+                });
+        </script>
+    }
+</div>
