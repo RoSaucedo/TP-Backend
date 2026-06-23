@@ -1,0 +1,111 @@
+@model GestorDespacho.Models.PedidoDetalle
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>PedidoDetalle</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" asp-for="PedidoId" value="@ViewBag.PedidoIdActual" />
+
+            <div class="form-group mb-3">
+                <label class="control-label">Buscar Producto</label>
+                <input type="text" list="productosData" class="form-control" id="productoBuscador" placeholder="Escriba para buscar..." autocomplete="off" />
+                <input type="hidden" asp-for="ProductoId" id="ProductoIdReal" />
+
+                <datalist id="productosData">
+                    @if (ViewBag.ProductosLista != null)
+                    {
+                        foreach (var prod in ViewBag.ProductosLista)
+                        {
+                            <option data-id="@prod.Id" data-costo="@prod.Costo" value="@prod.Descripcion"></option>
+                        }
+                    }
+                </datalist>
+                <span asp-validation-for="ProductoId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Cantidad" class="control-label"></label>
+                <input asp-for="Cantidad" class="form-control" id="txtCantidad" value="1" />
+                <span asp-validation-for="Cantidad" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Descripcion" class="control-label"></label>
+                <input asp-for="Descripcion" class="form-control" />
+                <span asp-validation-for="Descripcion" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="CostoUnitario" class="control-label">Costo Unitario</label>
+                <input type="text" name="CostoUnitario" id="txtCosto" class="form-control" oninput="this.value = this.value.replace('.', ',')" placeholder="0,00" />
+                <span asp-validation-for="CostoUnitario" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="control-label">Subtotal Visual</label>
+                <input type="text" id="txtSubtotal" class="form-control" readonly value="0,00" />
+            </div>
+
+            <div class="form-group mt-4">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        const inputBuscador = document.getElementById('productoBuscador');
+        const inputIdReal = document.getElementById('ProductoIdReal');
+        const inputCosto = document.getElementById('txtCosto');
+        const inputCantidad = document.getElementById('txtCantidad');
+        const inputSubtotal = document.getElementById('txtSubtotal');
+        const dataListOptions = document.getElementById('productosData').options;
+
+        function calcularSubtotal() {
+            let cant = parseFloat(inputCantidad.value) || 0;
+            let costoTexto = inputCosto.value.replace(',', '.');
+            let costo = parseFloat(costoTexto) || 0;
+            let sub = cant * costo;
+            inputSubtotal.value = sub.toFixed(2).replace('.', ',');
+        }
+
+        inputBuscador.addEventListener('input', function () {
+            let val = this.value;
+            inputIdReal.value = "";
+
+            for (let i = 0; i < dataListOptions.length; i++) {
+                if (dataListOptions[i].value === val) {
+                    inputIdReal.value = dataListOptions[i].getAttribute('data-id');
+                    // CORREGIDO: Ahora lee 'data-costo' en vez de 'data-precio'
+                    let costo = dataListOptions[i].getAttribute('data-costo');
+                    if (costo) {
+                        inputCosto.value = costo.replace('.', ',');
+                    }
+                    break;
+                }
+            }
+            calcularSubtotal();
+        });
+
+        inputCantidad.addEventListener('input', calcularSubtotal);
+        inputCosto.addEventListener('input', calcularSubtotal);
+    </script>
+}

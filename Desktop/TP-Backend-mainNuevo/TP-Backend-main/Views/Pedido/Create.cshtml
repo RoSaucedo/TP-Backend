@@ -1,0 +1,91 @@
+@model GestorDespacho.Models.Pedido
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Pedido</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" asp-for="Fecha" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" />
+
+            <div class="form-group mb-3">
+                <label class="control-label">Buscar Cliente (Nombre o CUIT)</label>
+                <input type="text" list="clientesData" class="form-control" id="clienteBuscador" placeholder="Escriba para buscar..." autocomplete="off" />
+                <input type="hidden" asp-for="ClienteId" id="ClienteIdReal" />
+
+                <datalist id="clientesData">
+                    @if (ViewBag.ClientesLista != null)
+                    {
+                        foreach (var cliente in ViewBag.ClientesLista)
+                        {
+                            <option data-id="@cliente.Id" value="@cliente.Nombre (CUIT: @cliente.CUIT)"></option>
+                        }
+                    }
+                </datalist>
+                <span asp-validation-for="ClienteId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="NombreUsuario" class="control-label">Usuario Operador</label>
+                <input asp-for="NombreUsuario" class="form-control" placeholder="Nombre del operador" />
+                <span asp-validation-for="NombreUsuario" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="MontoTotal" class="control-label">Monto Total</label>
+                <input type="text" name="MontoTotal" class="form-control" value="0,00" readonly />
+                <span asp-validation-for="MontoTotal" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="TotalProductos" class="control-label">Total Productos</label>
+                <input asp-for="TotalProductos" class="form-control" value="0" readonly />
+                <span asp-validation-for="TotalProductos" class="text-danger"></span>
+            </div>
+
+            <div class="form-group form-check mb-3">
+                <label class="form-check-label">
+                    <input asp-for="Confirmado" class="form-check-input" /> @Html.DisplayNameFor(model => model.Confirmado)
+                </label>
+            </div>
+
+            <div class="form-group mt-4">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.getElementById('clienteBuscador').addEventListener('input', function () {
+            var inputValue = this.value;
+            var options = document.getElementById('clientesData').options;
+            var hiddenInput = document.getElementById('ClienteIdReal');
+
+            hiddenInput.value = "";
+
+            for (var i = 0; i < options.length; i++) {
+                if (options[i].value === inputValue) {
+                    hiddenInput.value = options[i].getAttribute('data-id');
+                    break;
+                }
+            }
+        });
+    </script>
+}
